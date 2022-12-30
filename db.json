@@ -1,18 +1,3 @@
 {
-  "todos": [
-    {
-      "id": "1671895280506",
-      "title": "adasdasfasd",
-      "date": "2022-12-24T15:21:20.506Z",
-      "copmlated": false,
-      "editDate": false
-    },
-    {
-      "id": "1671895305969",
-      "title": "dasdasd",
-      "date": "2022-12-24T15:21:45.969Z",
-      "copmlated": false,
-      "editDate": false
-    }
-  ]
+  "todos": []
 }
