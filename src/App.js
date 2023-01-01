@@ -9,22 +9,25 @@ function App() {
   const [result, setResult] = useState(false)
   const [resultMessage, setResultMessage] = useState("")
   const [error, setError] = useState(false)
-  const [editTodo, setEdiTodo] = useState(null)
   const [isEditTodo, setIsEditTodo] = useState(false)
+  const [editTitle, setEditTitle] = useState("")
+  const [editTodo, setEditTodo] = useState(null)
 
 
-  const todoCopmleted=(todo)=>{
-    const updateTodo={
+
+
+  const todoCopmleted = (todo) => {
+    const updateTodo = {
       ...todo,
       copmlated: !todo.copmlated,
     }
     axios.put(`http://localhost:3004/todos/${todo.id}`, updateTodo)
-      .then((response)=>{
+      .then((response) => {
         setResult(true)
         setResultMessage("Güncelleme işlemi başarılı")
 
       })
-      .catch((error)=>{
+      .catch((error) => {
         setError(true)
         setResultMessage("HATA: Güncellme işlemi gerçekleşmedi ")
 
@@ -33,21 +36,50 @@ function App() {
 
   }
 
-  const todoDelete = (id)=>{
+  const todoDelete = (id) => {
     axios.delete(`http://localhost:3004/todos/${id}`)
-    .then((reponse)=>{
-      setResult(true)
-      setResultMessage("Silme işlemi tamamlandı.")
-      
-     })
-     .catch((error)=>{
-      setError(true)
-      setResultMessage("HATA: Silme işlme yapılırken bir hata oluştu lüften yönetici ile iletişme geçiniz.")
+      .then((reponse) => {
+        setResult(true)
+        setResultMessage("Silme işlemi tamamlandı.")
+
+      })
+      .catch((error) => {
+        setError(true)
+        setResultMessage("HATA: Silme işlme yapılırken bir hata oluştu lüften yönetici ile iletişme geçiniz.")
 
 
-     })
+      })
 
   };
+
+  const editTodoHundleSubmit = (event) => {
+
+    event.preventDefault()
+
+    if (editTitle === "") {
+      alert("düzenlenecek iş boş bırakılamaz.")
+      return
+    }
+    const editTodoUptade = {
+      ...editTodo,
+      title: editTitle,
+      editDate: String(new Date().getTime())
+    }
+    axios.put(`http://localhost:3004/todos/${editTodoUptade.id}`,editTodoUptade)
+    .then((reponse)=>{
+      setResult(true)
+      setResultMessage("güncelleme başarılı")
+      setIsEditTodo(false)
+
+    })
+    .catch((error)=>{
+      setError(true)
+      setResultMessage("HATA: güncelleme yapılamadı.")
+
+    })
+
+
+  }
 
   useEffect(() => {
     axios.get("http://localhost:3004/todos")
@@ -82,7 +114,7 @@ function App() {
 
     axios.post("http://localhost:3004/todos", newTodo)
       .then((reponse) => {
-      
+
         setTitle("")
         setResult(true)
         setResultMessage("kaydetme işlemi başarılı")
@@ -156,6 +188,7 @@ function App() {
             </div>
           </div>
         )}
+
       <div className="row">
         <form onSubmit={handleSubmit}>
           <div className="input-group mb-3">
@@ -174,6 +207,36 @@ function App() {
           </div>
         </form>
       </div>
+
+      {
+        isEditTodo === true && (
+          <form onSubmit={editTodoHundleSubmit}>
+            <div className="input-group my-3">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="edit type your todo"
+                value={editTitle}
+                onChange={(event) => setEditTitle(event.target.value)} />
+              <button
+
+                className="btn btn-outline-success"
+                type="submit">
+                SAVE
+              </button>
+              <button
+                onClick={() => setIsEditTodo(false)}
+                className="btn btn-outline-secondary"
+                type="button">
+                CANCEL
+              </button>
+            </div>
+          </form>
+
+        )
+      }
+
+
       {todolar.map((todo) => (
         <div key={todo.id} className="alert alert-secondary" role="alert">
 
@@ -184,18 +247,23 @@ function App() {
             </div>
             <div className="d-flex align-items-end">
               <button
+                onClick={() => {
+                  setIsEditTodo(true);
+                  setEditTodo(todo)
+                  setEditTitle(todo.title)
+                }}
                 className="btn btn-sm btn-warning mx-1"
                 type="button">
                 EDIT
               </button>
               <button
-                onClick={()=>todoDelete(todo.id)}
+                onClick={() => todoDelete(todo.id)}
                 className="btn btn-sm btn-danger mx-1"
                 type="button">
                 DELETE
               </button>
               <button
-                onClick={()=>todoCopmleted(todo)}
+                onClick={() => todoCopmleted(todo)}
                 className="btn btn-sm btn-success mx-1"
                 type="button">
                 {todo.copmlated === true ? "NOT DONE" : "DONE"}
@@ -203,15 +271,10 @@ function App() {
             </div>
           </div>
         </div>
-      ))}
-
-
-
-      {
-
+      ))
       }
 
-    </div>
+    </div >
 
 
 
